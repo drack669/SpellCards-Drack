@@ -1,61 +1,50 @@
-📜 Creador de Tarjetas de Hechizo D&D Profesional
+# 📜 Creador de Tarjetas de Hechizo D&D Profesional
 
-¡Bienvenido al Creador de Tarjetas de Hechizo! Esta es una herramienta web diseñada para jugadores y Dungeon Masters de D&D 5ª Edición que desean crear tarjetas de hechizos personalizadas, estéticas y listas para imprimir o compartir digitalmente.
+¡Bienvenido al **Creador de Tarjetas de Hechizo**! Esta es una herramienta web de código abierto diseñada para jugadores y Dungeon Masters de **D&D 5ª Edición**. Permite crear tarjetas de hechizos personalizadas, estéticas y listas para imprimir o compartir en formato digital.
 
-!
+---
 
-✨ Características Principales
+## ✨ Características Principales
 
-Personalización Total: Cambia colores de fondo, bordes, texto y cajas de información en tiempo real.
+* **Personalización Total:** Ajusta colores de fondo, bordes, tipografías y opacidad de las cajas de información en tiempo real para adaptarlas a la temática de tu personaje o campaña.
+* **Conversión Automática de Medidas:** Sistema inteligente donde solo ingresas los pies (**ft**) y el sistema genera automáticamente la conversión a metros (**m**) y casillas de tablero (**c**) en el orden estándar de la carta.
+* **Iconografía Dinámica:** Incluye iconos automáticos según la clase seleccionada (Mago, Clérigo, etc.) y formas geométricas para representar el área de efecto (cono, esfera, línea, cubo, cilindro).
+* **Gestión Inteligente de Componentes:** Los componentes mágicos (**V, S, M, Ritual, Concentración**) que no se seleccionan se ocultan completamente, dejando la tarjeta limpia y profesional.
+* **Exportación en Alta Calidad:** Genera archivos **JPG de alta resolución (escala 3x)**, optimizados para una impresión nítida de tamaño de carta coleccionable.
+* **Optimizado para la Web:** Diseño responsivo y ligero, ideal para ser integrado en sitios de WordPress mediante Elementor o cargado directamente en el navegador.
 
-Conversión Automática: Introduce la distancia en pies (ft) y el sistema calculará automáticamente los metros (m) y las casillas (c).
+---
 
-Iconografía Dinámica: Iconos de clase y formas de área (cono, esfera, línea, etc.) que se ajustan visualmente.
+## 🚀 Cómo Empezar
 
-Gestión Inteligente de Componentes: Los componentes (V, S, M, Rit, Conc) que no se utilizan se ocultan automáticamente para mantener un diseño limpio.
+Este proyecto es una aplicación web de un solo archivo (*Single File App*), por lo que no necesitas instalar nada complicado ni configurar servidores.
 
-Exportación en Alta Calidad: Genera archivos JPG con una escala de resolución 3x, ideal para impresiones nítidas.
+### Uso Local
+1.  **Descarga el archivo:** Guarda el código del archivo `spell_card_maker.html` en tu computadora.
+2.  **Ábrelo:** Haz doble clic en el archivo para abrirlo en tu navegador favorito (Chrome, Firefox, Edge, etc.).
+3.  **Crea y Exporta:** Rellena los datos de tu hechizo y haz clic en el botón café de **"Descargar Imagen"**.
 
-Diseño Responsivo: Compatible con navegadores de escritorio y dispositivos móviles.
+### Integración en WordPress (Elementor)
+1.  Añade un widget de **HTML** a tu página.
+2.  Pega el código completo del archivo fuente dentro del widget.
+3.  Configura la sección o contenedor de Elementor como **Ancho Completo (Full Width)**.
 
-Optimizado para WordPress: Estructura preparada para ser insertada fácilmente mediante Elementor o widgets HTML.
+---
 
-🚀 Instalación y Uso
+## 🛠️ Tecnologías Utilizadas
 
-Este proyecto es una aplicación web de un solo archivo (Single File App), por lo que no requiere servidor ni base de datos para funcionar de manera local.
+| Tecnología | Uso |
+| :--- | :--- |
+| **HTML5 & CSS3** | Estructura y diseño con variables CSS dinámicas. |
+| **Tailwind CSS** | Framework para un diseño moderno, adaptable y profesional. |
+| **Lucide Icons** | Set de iconos vectoriales elegantes y consistentes. |
+| **html2canvas** | Librería para convertir el diseño del navegador en imágenes JPG. |
+| **Google Fonts** | Fuentes seleccionadas (*Cinzel, MedievalSharp e Inter*) para un look de fantasía épica. |
 
-Clona el repositorio:
+---
 
-git clone [https://github.com/tu-usuario/nombre-del-repo.git](https://github.com/tu-usuario/nombre-del-repo.git)
+## 📄 Licencia
 
+Este proyecto está bajo la **Licencia MIT**. Esto significa que puedes usarlo, modificarlo y compartirlo libremente en tus mesas de juego o proyectos personales.
 
-Abre el archivo:
-Simplemente abre spell_card_maker.html en cualquier navegador moderno (Chrome, Firefox, Edge, Safari).
-
-🛠️ Tecnologías Utilizadas
-
-HTML5 & CSS3 (Custom Properties para el sistema de colores).
-
-Tailwind CSS: Para el diseño rápido y responsivo.
-
-Lucide Icons: Para la iconografía de fantasía y utilidades.
-
-html2canvas: Para transformar el DOM en imágenes descargables de alta resolución.
-
-Google Fonts: Fuentes Cinzel, MedievalSharp e Inter.
-
-📖 Cómo Exportar a WordPress
-
-Si deseas usar esta herramienta en tu sitio de WordPress con Elementor:
-
-Copia el código completo del archivo .html.
-
-Pega el código en un widget de HTML.
-
-Asegúrate de que el contenedor de Elementor sea de Ancho Completo para una mejor visualización.
-
-📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Siéntete libre de usarlo, modificarlo y compartirlo en tus mesas de juego.
-
-Hecho con ❤️ para la comunidad de D&D.
+> Hecho con ❤️ para la comunidad de D&D por **[Tu Nombre/Usuario]**
