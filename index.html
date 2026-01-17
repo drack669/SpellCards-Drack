@@ -9,22 +9,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Aislamiento para WordPress */
+        #dnd-spell-app-wrapper {
+            all: initial; /* Basic Reset */
+            display: block;
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #1e293b;
+            padding: 20px;
+            /* Eliminamos min-height: 100vh para evitar forzar la altura de pantalla */
+            height: auto; 
+            box-sizing: border-box;
+        }
+
+        #dnd-spell-app-wrapper * {
+            box-sizing: border-box;
+        }
+
         :root {
             --card-gold: #c5a059;
             --card-border: #2a1b10;
             --info-box-bg: rgba(253, 246, 227, 0.8); 
-            /* Variables de color de texto */
             --text-primary: #2a1b10;
             --text-accent: #7c2d12;
             --text-secondary: #71717a;
         }
         
-        body {
-            background-color: #0f172a;
-            color: #e2e8f0;
-            font-family: 'Inter', sans-serif;
-        }
-
         .fantasy-font { font-family: 'Cinzel', serif; }
         .medieval-font { font-family: 'MedievalSharp', cursive; }
 
@@ -32,14 +42,16 @@
             width: 350px;
             height: 540px;
             perspective: 1000px;
+            flex-shrink: 0;
+            /* Sticky para que la carta te siga mientras haces scroll en el panel */
+            position: sticky;
+            top: 20px;
         }
 
         .spell-card {
             width: 350px;
             height: 540px;
             background-color: #fdf6e3;
-            background-size: cover;
-            background-position: center;
             color: var(--text-primary);
             border: 10px solid var(--card-border);
             border-radius: 8px;
@@ -83,11 +95,12 @@
 
         .stat-item {
             background: rgba(0,0,0,0.03);
-            padding: 2px 6px;
+            padding: 5px 6px;
             border-radius: 2px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
+            min-height: 45px;
         }
 
         .stat-label {
@@ -99,19 +112,21 @@
 
         .components-bar {
             display: flex;
-            gap: 4px;
+            gap: 8px;
             align-items: center;
             justify-content: center;
             padding: 4px 0;
             margin-top: 2px;
+            flex-wrap: wrap;
         }
 
         .comp-icon {
             display: flex;
             align-items: center;
             gap: 2px;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             font-weight: bold;
+            color: var(--text-accent);
         }
 
         .description-area {
@@ -120,7 +135,7 @@
             flex-direction: column;
             overflow: hidden;
             text-align: justify;
-            line-height: 1.2;
+            line-height: 1.25;
         }
 
         .higher-levels-label {
@@ -129,38 +144,46 @@
             color: var(--text-accent);
         }
 
-        input, textarea, select {
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: white;
+        #dnd-spell-app-wrapper input, 
+        #dnd-spell-app-wrapper textarea, 
+        #dnd-spell-app-wrapper select {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
             padding: 6px;
             border-radius: 4px;
             width: 100%;
             font-size: 0.85rem;
+            display: block;
+        }
+
+        #dnd-spell-app-wrapper input:focus, 
+        #dnd-spell-app-wrapper textarea:focus, 
+        #dnd-spell-app-wrapper select:focus {
+            outline: 2px solid #5d4037;
+            background: #ffffff;
         }
 
         .control-group {
-            background: #1e293b;
+            background: #f8fafc;
             padding: 10px;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
             margin-bottom: 10px;
         }
 
-        label {
+        #dnd-spell-app-wrapper label {
             font-size: 0.75rem;
-            color: #94a3b8;
+            color: #64748b;
             margin-bottom: 2px;
             display: block;
         }
 
-        .icon-active { opacity: 1; color: var(--text-accent); }
-        .icon-inactive { opacity: 0.2; color: var(--text-secondary); }
-
         .btn-export {
-            background: linear-gradient(to bottom right, #f59e0b, #d97706);
+            background: #5d4037;
             color: white;
             font-weight: bold;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             width: 100%;
             transition: all 0.2s;
@@ -168,11 +191,22 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-export:hover { 
+            background: #4e342e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         .footer-box {
             background: var(--info-box-bg);
@@ -192,226 +226,187 @@
             grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
         }
-
-        /* Indicador visual de error de carga */
-        .img-error {
-            border: 1px solid #ef4444 !important;
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
-        }
     </style>
 </head>
-<body class="p-4 md:p-8 flex flex-col md:flex-row gap-6 justify-center items-start">
+<body style="margin:0; padding:0;">
 
-    <!-- Panel de Control -->
-    <div class="w-full md:w-96 overflow-y-auto max-h-[95vh] pr-2 custom-scrollbar">
-        <h2 class="text-xl font-bold mb-4 text-amber-500 fantasy-font">Maestro de Hechizos</h2>
-        
-        <div class="mb-4">
-            <button onclick="exportJPG()" class="btn-export">
-                <i data-lucide="download"></i> Descargar Imagen
-            </button>
-        </div>
-
-        <!-- SECCIÓN 1: DISEÑO Y COLORES -->
-        <div class="control-group">
-            <label class="font-bold text-amber-500 mb-2 border-b border-zinc-700 pb-1">1. Estética y Colores</label>
+    <div id="dnd-spell-app-wrapper">
+        <div class="flex flex-wrap gap-8 justify-center items-start w-full relative">
             
-            <label>Imagen de Fondo (URL)</label>
-            <input type="text" id="in-bg-url" placeholder="URL de textura o imagen" oninput="debouncedUpdate()" class="mb-4">
-            
-            <label class="mb-1">Colores del Texto</label>
-            <div class="color-picker-grid mb-4">
-                <div>
-                    <label class="text-[0.6rem]">Texto Principal</label>
-                    <input type="color" id="col-primary" value="#2a1b10" oninput="update()">
+            <!-- Panel de Control (Sin scroll interno forzado) -->
+            <div class="w-full max-w-[420px]">
+                <h2 class="text-xl font-bold mb-4 text-[#5d4037] fantasy-font text-center">Maestro de Hechizos</h2>
+                
+                <div class="mb-4">
+                    <button onclick="exportJPG()" class="btn-export">
+                        <i data-lucide="download"></i> Descargar Imagen
+                    </button>
                 </div>
-                <div>
-                    <label class="text-[0.6rem]">Texto Acento</label>
-                    <input type="color" id="col-accent" value="#7c2d12" oninput="update()">
-                </div>
-                <div>
-                    <label class="text-[0.6rem]">Texto Secund.</label>
-                    <input type="color" id="col-secondary" value="#71717a" oninput="update()">
-                </div>
-            </div>
 
-            <label class="mb-1">Personalización de Cuadros (Boxes)</label>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="text-[0.6rem]">Color Fondo Box</label>
-                    <input type="color" id="col-box" value="#fdf6e3" oninput="update()">
-                </div>
-                <div>
-                    <label class="text-[0.6rem]">Opacidad (%)</label>
-                    <input type="range" id="range-opacity" min="0" max="1" step="0.01" value="0.8" oninput="update()">
-                </div>
-            </div>
-        </div>
+                <!-- 1. DISEÑO -->
+                <div class="control-group">
+                    <label class="font-bold text-[#5d4037] mb-2 border-b border-zinc-200 pb-1 uppercase tracking-wider">1. Estética y Colores</label>
+                    
+                    <label class="mb-1">Colores de la Carta</label>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="text-[0.6rem]">Color de Fondo</label>
+                            <input type="color" id="col-card-bg" value="#fdf6e3" oninput="update()">
+                        </div>
+                        <div>
+                            <label class="text-[0.6rem]">Color de Borde</label>
+                            <input type="color" id="col-card-border" value="#2a1b10" oninput="update()">
+                        </div>
+                    </div>
 
-        <!-- SECCIÓN 2: INFORMACIÓN -->
-        <div class="control-group">
-            <label class="font-bold text-amber-500 mb-2 border-b border-zinc-700 pb-1">2. Información del Hechizo</label>
-            <input type="text" id="in-name" value="Bola de Fuego" oninput="update()" class="mb-2" placeholder="Nombre (ES)">
-            <input type="text" id="in-name-en" value="Fireball" oninput="update()" placeholder="Nombre (EN)">
-            
-            <div class="grid grid-cols-2 gap-2 mt-2">
-                <div>
-                    <label>Nivel</label>
-                    <input type="number" id="in-level" min="0" max="9" value="3" oninput="update()">
+                    <label class="mb-1">Colores del Texto</label>
+                    <div class="color-picker-grid mb-4">
+                        <div><label class="text-[0.6rem]">Principal</label><input type="color" id="col-primary" value="#2a1b10" oninput="update()"></div>
+                        <div><label class="text-[0.6rem]">Acento</label><input type="color" id="col-accent" value="#7c2d12" oninput="update()"></div>
+                        <div><label class="text-[0.6rem]">Secundario</label><input type="color" id="col-secondary" value="#71717a" oninput="update()"></div>
+                    </div>
+                    
+                    <label class="mb-1">Cajas de Información</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-[0.6rem]">Color Fondo Box</label><input type="color" id="col-box" value="#fdf6e3" oninput="update()"></div>
+                        <div><label class="text-[0.6rem]">Opacidad</label><input type="range" id="range-opacity" min="0" max="1" step="0.01" value="0.8" oninput="update()"></div>
+                    </div>
                 </div>
-                <div>
-                    <label>Escuela</label>
-                    <select id="in-school" onchange="update()">
-                        <option value="Abjuración">Abjuración</option>
-                        <option value="Adivinación">Adivinación</option>
-                        <option value="Conjuración">Conjuración</option>
-                        <option value="Encantamiento">Encantamiento</option>
-                        <option value="Evocación" selected>Evocación</option>
-                        <option value="Ilusionismo">Ilusionismo</option>
-                        <option value="Nigromancia">Nigromancia</option>
-                        <option value="Transmutación">Transmutación</option>
+
+                <!-- 2. INFORMACIÓN -->
+                <div class="control-group">
+                    <label class="font-bold text-[#5d4037] mb-2 border-b border-zinc-200 pb-1 uppercase tracking-wider">2. Información</label>
+                    <input type="text" id="in-name" value="" oninput="update()" class="mb-2" placeholder="Nombre del Hechizo (ES)">
+                    <input type="text" id="in-name-en" value="" oninput="update()" class="mb-2" placeholder="Nombre en Inglés (EN)">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label>Nivel</label><input type="number" id="in-level" min="0" max="9" value="0" oninput="update()"></div>
+                        <div><label>Escuela</label>
+                            <select id="in-school" onchange="update()">
+                                <option value="Abjuración">Abjuración</option>
+                                <option value="Adivinación">Adivinación</option>
+                                <option value="Conjuración">Conjuración</option>
+                                <option value="Encantamiento">Encantamiento</option>
+                                <option value="Evocación">Evocación</option>
+                                <option value="Ilusionismo">Ilusionismo</option>
+                                <option value="Nigromancia">Nigromancia</option>
+                                <option value="Transmutación">Transmutación</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. ALCANCE Y ÁREA -->
+                <div class="control-group">
+                    <label class="font-bold text-[#5d4037] mb-2 border-b border-zinc-200 pb-1 uppercase tracking-wider">3. Alcance y Área</label>
+                    <div class="flex items-center gap-2 mb-2">
+                        <input type="checkbox" id="in-touch" onchange="toggleTouch()" class="w-4 h-4">
+                        <span class="text-xs">Es de Toque</span>
+                    </div>
+                    <div id="range-inputs" class="mb-2">
+                        <div><label class="text-[0.6rem] text-zinc-500">Distancia en Pies (ft)</label><input type="number" id="in-ft" placeholder="0" value="" oninput="update()"></div>
+                    </div>
+                    <select id="in-shape" onchange="update()">
+                        <option value="none">Sin área específica</option>
+                        <option value="cone">Cono</option>
+                        <option value="sphere">Esfera</option>
+                        <option value="line">Línea</option>
+                        <option value="cube">Cubo</option>
+                        <option value="cylinder">Cilindro</option>
                     </select>
                 </div>
-            </div>
-        </div>
 
-        <div class="control-group">
-            <label class="font-bold text-amber-500 mb-2 border-b border-zinc-700 pb-1">3. Alcance y Área</label>
-            <div class="flex items-center gap-2 mb-2">
-                <input type="checkbox" id="in-touch" onchange="toggleTouch()" class="w-4 h-4">
-                <span class="text-xs text-zinc-300">Es de Toque</span>
-            </div>
-            <div id="range-inputs" class="grid grid-cols-3 gap-2 mb-2">
-                <input type="number" id="in-m" placeholder="m" value="45" oninput="update()">
-                <input type="number" id="in-ft" placeholder="ft" value="150" oninput="update()">
-                <input type="number" id="in-sq" placeholder="Cas" value="30" oninput="update()">
-            </div>
-            <select id="in-shape" onchange="update()" class="mb-2">
-                <option value="none">Sin área específica</option>
-                <option value="cone">Cono</option>
-                <option value="sphere">Esfera / Radio</option>
-                <option value="line">Línea</option>
-                <option value="cube">Cubo</option>
-                <option value="cylinder">Cilindro</option>
-            </select>
-            
-            <div class="grid grid-cols-5 gap-1 mt-1">
-                <label class="text-[0.65rem] text-center"><input type="checkbox" id="in-v" onchange="update()" checked> V</label>
-                <label class="text-[0.65rem] text-center"><input type="checkbox" id="in-s" onchange="update()" checked> S</label>
-                <label class="text-[0.65rem] text-center"><input type="checkbox" id="in-m-check" onchange="update()" checked> M</label>
-                <label class="text-[0.65rem] text-center"><input type="checkbox" id="in-rit" onchange="update()"> Rit</label>
-                <label class="text-[0.65rem] text-center"><input type="checkbox" id="in-con" onchange="update()"> Con</label>
-            </div>
-            <input type="text" id="in-m-text" value="Una bola de guano de murciélago y azufre." oninput="update()" class="mt-2" placeholder="Detalles de materiales...">
-        </div>
-
-        <div class="control-group">
-            <label class="font-bold text-amber-500 mb-2 border-b border-zinc-700 pb-1">4. Tiempos y Clase</label>
-            <div class="grid grid-cols-2 gap-2 mb-2">
-                <input type="text" id="in-time" value="1 acción" oninput="update()" placeholder="T. Ejecución">
-                <input type="text" id="in-duration" value="Instantáneo" oninput="update()" placeholder="Duración">
-            </div>
-            <select id="in-class" onchange="update()">
-                <option value="mago">Mago</option>
-                <option value="hechicero">Hechicero</option>
-                <option value="brujo">Brujo</option>
-                <option value="clerigo">Clérigo</option>
-                <option value="bardo">Bardo</option>
-                <option value="paladin">Paladín</option>
-                <option value="cazador">Cazador</option>
-                <option value="artificer">Artífice</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <label class="font-bold text-amber-500 mb-2 border-b border-zinc-700 pb-1">5. Efectos</label>
-            <textarea id="in-desc" rows="4" oninput="update()" class="mb-2">Un rayo brillante surge de tu dedo índice hacia un punto que elijas dentro del alcance y luego estalla con un estruendo de llamas en una esfera de 20 pies de radio. Cada criatura en el área debe realizar una tirada de salvación de Destreza.</textarea>
-            <textarea id="in-higher" rows="2" oninput="update()" placeholder="A niveles superiores...">Cuando lanzas este conjuro usando un espacio de conjuro de nivel 4 o superior, el daño aumenta en 1d6 por cada nivel de espacio por encima de 3.</textarea>
-        </div>
-
-        <div class="control-group">
-            <label>6. Origen</label>
-            <input type="text" id="in-source" value="PHB'14 - p.234" oninput="update()">
-        </div>
-    </div>
-
-    <!-- Renderizado de la Carta -->
-    <div class="card-container">
-        <div class="spell-card" id="card">
-            
-            <!-- Header -->
-            <div class="info-box header-section">
-                <div class="flex justify-between items-start">
-                    <div class="flex flex-col">
-                        <span id="card-name" class="fantasy-font text-lg font-bold leading-tight" style="color: var(--text-primary)">Bola de Fuego</span>
-                        <span id="card-name-en" class="italic text-[0.6rem]" style="color: var(--text-secondary)">Fireball</span>
+                <!-- 4. TIEMPOS Y COMPONENTES -->
+                <div class="control-group">
+                    <label class="font-bold text-[#5d4037] mb-2 border-b border-zinc-200 pb-1 uppercase tracking-wider">4. Tiempos y Componentes</label>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <div><label>T. Ejecución</label><input type="text" id="in-time" value="" oninput="update()" placeholder="Acción, Reacción..."></div>
+                        <div><label>Duración</label><input type="text" id="in-duration" value="" oninput="update()" placeholder="Concentración, 1 min..."></div>
                     </div>
-                    <div class="flex flex-col items-end">
-                        <span id="card-lvl-school" class="fantasy-font text-[0.6rem] font-bold text-right" style="color: var(--text-accent)">NIVEL 3 - EVOCACIÓN</span>
-                        <div class="mt-1">
-                            <i id="card-class-icon" data-lucide="wand-2" class="w-5 h-5" style="color: var(--text-accent)"></i>
+                    <div class="grid grid-cols-5 gap-1 text-center mb-2">
+                        <label><input type="checkbox" id="in-v" onchange="update()"> V</label>
+                        <label><input type="checkbox" id="in-s" onchange="update()"> S</label>
+                        <label><input type="checkbox" id="in-m-check" onchange="update()"> M</label>
+                        <label><input type="checkbox" id="in-rit" onchange="update()"> Rit</label>
+                        <label><input type="checkbox" id="in-con" onchange="update()"> Con</label>
+                    </div>
+                    <input type="text" id="in-m-text" value="" oninput="update()" placeholder="Materiales necesarios...">
+                    <div class="mt-2"><label>Clase</label>
+                        <select id="in-class" onchange="update()">
+                            <option value="mago">Mago</option><option value="hechicero">Hechicero</option><option value="brujo">Brujo</option>
+                            <option value="clerigo">Clérigo</option><option value="bardo">Bardo</option><option value="paladin">Paladín</option>
+                            <option value="cazador">Cazador</option><option value="artificer">Artífice</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 5. EFECTOS -->
+                <div class="control-group">
+                    <label class="font-bold text-[#5d4037] mb-2 border-b border-zinc-200 pb-1 uppercase tracking-wider">5. Efectos y Fuente</label>
+                    <textarea id="in-desc" rows="4" oninput="update()" class="mb-2" placeholder="Descripción detallada del hechizo..."></textarea>
+                    <textarea id="in-higher" rows="2" oninput="update()" class="mb-2" placeholder="A niveles superiores..."></textarea>
+                    <input type="text" id="in-source" value="" oninput="update()" placeholder="Fuente (ej. PHB'24 - p.215)">
+                </div>
+            </div>
+
+            <!-- Card Rendering -->
+            <div class="card-container">
+                <div class="spell-card" id="card">
+                    <div class="info-box header-section">
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col max-w-[70%]">
+                                <span id="card-name" class="fantasy-font text-lg font-bold leading-tight" style="color: var(--text-primary)">---</span>
+                                <span id="card-name-en" class="italic text-[0.6rem]" style="color: var(--text-secondary)">---</span>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span id="card-lvl-school" class="fantasy-font text-[0.6rem] font-bold text-right" style="color: var(--text-accent)">TRUCO</span>
+                                <div class="w-7 h-7 flex items-center justify-center mt-1">
+                                    <i id="card-class-icon" data-lucide="wand-2" class="w-5 h-5" style="color: var(--text-accent)"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Stats -->
-            <div class="info-box">
-                <div class="stat-grid">
-                    <div class="stat-item">
-                        <span class="stat-label">T. Ejecución</span>
-                        <span id="card-time" class="text-[0.6rem] font-semibold">1 acción</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Alcance / Área</span>
-                        <div class="flex items-center gap-1">
-                            <i id="card-shape-icon" data-lucide="circle" class="w-3 h-3 hidden"></i>
-                            <span id="card-range" class="text-[0.6rem] font-semibold">45m / 150ft / 30c</span>
+                    <div class="info-box">
+                        <div class="stat-grid">
+                            <div class="stat-item"><span class="stat-label">T. Ejecución</span><span id="card-time" class="text-[0.6rem] font-semibold">---</span></div>
+                            <div class="stat-item">
+                                <span class="stat-label">Alcance / Área</span>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <div class="flex-shrink-0 w-4 h-4 flex items-center justify-center">
+                                        <i id="card-shape-icon" data-lucide="circle" class="w-3.5 h-3.5 hidden" style="color: var(--text-accent)"></i>
+                                    </div>
+                                    <span id="card-range" class="text-[0.58rem] font-semibold leading-tight">---</span>
+                                </div>
+                            </div>
+                            <div class="stat-item"><span class="stat-label">Duración</span><span id="card-duration" class="text-[0.6rem] font-semibold">---</span></div>
+                            <div class="stat-item"><span class="stat-label">Clase</span><span id="card-class-name" class="text-[0.6rem] font-semibold capitalize">---</span></div>
+                        </div>
+                        <div class="components-bar" id="components-display-bar">
+                            <div id="ico-v" class="comp-icon"><i data-lucide="mic" class="w-3 h-3"></i>V</div>
+                            <div id="ico-s" class="comp-icon"><i data-lucide="hand" class="w-3 h-3"></i>S</div>
+                            <div id="ico-m" class="comp-icon"><i data-lucide="package" class="w-3 h-3"></i>M</div>
+                            <div id="ico-rit" class="comp-icon"><i data-lucide="sparkles" class="w-3 h-3"></i>RIT</div>
+                            <div id="ico-con" class="comp-icon"><i data-lucide="brain" class="w-3 h-3"></i>CONC</div>
                         </div>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Duración</span>
-                        <span id="card-duration" class="text-[0.6rem] font-semibold">Instantáneo</span>
+
+                    <div id="card-m-desc" class="info-box text-[0.55rem] leading-tight italic border-l-4" style="border-color: var(--text-accent); color: var(--text-secondary)">M: ---</div>
+
+                    <div class="info-box description-area" id="desc-container">
+                        <div id="card-content-wrapper" style="color: var(--text-primary)">
+                            <div id="card-desc-main" class="mb-1"></div>
+                            <div id="card-higher-area" class="mt-2 pt-1 border-t border-black/5">
+                                <span class="higher-levels-label">A niveles superiores:</span>
+                                <span id="card-higher-text"></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Clase</span>
-                        <span id="card-class-name" class="text-[0.6rem] font-semibold capitalize">Mago</span>
-                    </div>
-                </div>
 
-                <div class="components-bar">
-                    <div id="ico-v" class="comp-icon"><i data-lucide="mic" class="w-2.5 h-2.5"></i>V</div>
-                    <div id="ico-s" class="comp-icon"><i data-lucide="hand" class="w-2.5 h-2.5"></i>S</div>
-                    <div id="ico-m" class="comp-icon"><i data-lucide="package" class="w-2.5 h-2.5"></i>M</div>
-                    <div class="w-px h-2.5 bg-zinc-400 mx-0.5 opacity-30"></div>
-                    <div id="ico-rit" class="comp-icon"><i data-lucide="sparkles" class="w-2.5 h-2.5"></i>RIT</div>
-                    <div id="ico-con" class="comp-icon"><i data-lucide="brain" class="w-2.5 h-2.5"></i>CONC</div>
-                </div>
-            </div>
-
-            <div id="card-m-desc" class="info-box text-[0.55rem] leading-tight italic border-l-4" style="border-color: var(--text-accent); color: var(--text-secondary)">
-                M: Una bola de guano de murciélago y azufre.
-            </div>
-
-            <div class="info-box description-area" id="desc-container">
-                <div id="card-content-wrapper" style="color: var(--text-primary)">
-                    <div id="card-desc-main" class="mb-1"></div>
-                    <div id="card-higher-area" class="mt-2 pt-1 border-t border-black/5">
-                        <span class="higher-levels-label">A niveles superiores:</span>
-                        <span id="card-higher-text"></span>
+                    <div class="footer-box">
+                        <span id="card-source-footer">---</span>
+                        <span>D&D 5ª Edición</span>
                     </div>
                 </div>
-            </div>
-
-            <div class="footer-box">
-                <span id="card-source-footer">PHB'14 - p.234</span>
-                <span>D&D 5ª Edición</span>
             </div>
         </div>
     </div>
@@ -419,7 +414,6 @@
     <script>
         const classIcons = { mago: 'wand-2', hechicero: 'zap', brujo: 'eye', clerigo: 'cross', bardo: 'music', paladin: 'shield', cazador: 'target', artificer: 'hammer' };
         const shapeIcons = { cone: 'triangle', sphere: 'circle', line: 'move-right', cube: 'square', cylinder: 'database', none: '' };
-
         let updateTimeout;
 
         function hexToRgb(hex) {
@@ -432,121 +426,116 @@
         function toggleTouch() {
             const isTouch = document.getElementById('in-touch').checked;
             const inputs = document.getElementById('range-inputs');
-            inputs.style.opacity = isTouch ? "0.3" : "1";
-            inputs.style.pointerEvents = isTouch ? "none" : "auto";
+            if(inputs) {
+                inputs.style.opacity = isTouch ? "0.3" : "1";
+                inputs.style.pointerEvents = isTouch ? "none" : "auto";
+            }
             update();
         }
 
-        // Función para evitar errores de consola al escribir URLs incompletas
-        function debouncedUpdate() {
-            clearTimeout(updateTimeout);
-            updateTimeout = setTimeout(update, 500);
-        }
-
         function update() {
-            const root = document.documentElement;
-            
-            // Colores de Texto
-            const colPrimary = document.getElementById('col-primary').value;
-            const colAccent = document.getElementById('col-accent').value;
-            const colSecondary = document.getElementById('col-secondary').value;
-            root.style.setProperty('--text-primary', colPrimary);
-            root.style.setProperty('--text-accent', colAccent);
-            root.style.setProperty('--text-secondary', colSecondary);
+            try {
+                const root = document.documentElement;
+                
+                // Colores de la carta
+                const cardBg = document.getElementById('col-card-bg').value;
+                const cardBorder = document.getElementById('col-card-border').value;
+                root.style.setProperty('--card-border', cardBorder);
+                document.getElementById('card').style.backgroundColor = cardBg;
 
-            // Color y Opacidad de Cuadros (Boxes)
-            const boxColorHex = document.getElementById('col-box').value;
-            const boxOpacity = document.getElementById('range-opacity').value;
-            const boxRgb = hexToRgb(boxColorHex);
-            root.style.setProperty('--info-box-bg', `rgba(${boxRgb}, ${boxOpacity})`);
+                // Colores de texto
+                root.style.setProperty('--text-primary', document.getElementById('col-primary').value);
+                root.style.setProperty('--text-accent', document.getElementById('col-accent').value);
+                root.style.setProperty('--text-secondary', document.getElementById('col-secondary').value);
+                
+                // Cajas
+                const boxRgb = hexToRgb(document.getElementById('col-box').value);
+                root.style.setProperty('--info-box-bg', `rgba(${boxRgb}, ${document.getElementById('range-opacity').value})`);
 
-            // Validación de Imagen de Fondo
-            const bgInput = document.getElementById('in-bg-url');
-            const bgUrl = bgInput.value.trim();
-            const card = document.getElementById('card');
+                // Nombres
+                const nameVal = document.getElementById('in-name').value;
+                const nameEnVal = document.getElementById('in-name-en').value;
+                document.getElementById('card-name').innerText = nameVal || "---";
+                document.getElementById('card-name-en').innerText = nameEnVal || "---";
 
-            if (bgUrl) {
-                // Pre-cargamos la imagen para verificar que existe y no de error de red
-                const tempImg = new Image();
-                tempImg.onload = () => {
-                    card.style.backgroundImage = `url('${bgUrl}')`;
-                    bgInput.classList.remove('img-error');
-                };
-                tempImg.onerror = () => {
-                    // Si falla la carga, quitamos el fondo y marcamos error visualmente en el input
-                    card.style.backgroundImage = 'none';
-                    bgInput.classList.add('img-error');
-                    console.warn("La imagen de fondo no pudo cargarse o tiene restricciones de CORS.");
-                };
-                tempImg.src = bgUrl;
-            } else {
-                card.style.backgroundImage = 'none';
-                bgInput.classList.remove('img-error');
-            }
+                // Nivel y Escuela
+                const level = parseInt(document.getElementById('in-level').value) || 0;
+                const school = document.getElementById('in-school').value;
+                document.getElementById('card-lvl-school').innerText = `${level === 0 ? "TRUCO" : "NIVEL " + level} - ${school.toUpperCase()}`;
+                
+                // Tiempos
+                document.getElementById('card-time').innerText = document.getElementById('in-time').value || "---";
+                document.getElementById('card-duration').innerText = document.getElementById('in-duration').value || "---";
+                
+                // Clase
+                const className = document.getElementById('in-class').value;
+                document.getElementById('card-class-name').innerText = className || "---";
+                document.getElementById('card-class-icon').setAttribute('data-lucide', classIcons[className] || 'wand-2');
 
-            // Actualización de Contenido
-            document.getElementById('card-name').innerText = document.getElementById('in-name').value;
-            document.getElementById('card-name-en').innerText = document.getElementById('in-name-en').value;
-            const level = parseInt(document.getElementById('in-level').value);
-            const school = document.getElementById('in-school').value;
-            document.getElementById('card-lvl-school').innerText = `${level === 0 ? "TRUCO" : "NIVEL " + level} - ${school.toUpperCase()}`;
-            
-            const className = document.getElementById('in-class').value;
-            document.getElementById('card-class-icon').setAttribute('data-lucide', classIcons[className] || 'help-circle');
-            document.getElementById('card-class-name').innerText = className;
-            document.getElementById('card-time').innerText = document.getElementById('in-time').value;
-            document.getElementById('card-duration').innerText = document.getElementById('in-duration').value;
-
-            const isTouch = document.getElementById('in-touch').checked;
-            const shape = document.getElementById('in-shape').value;
-            const rangeTextEl = document.getElementById('card-range');
-            const shapeIconEl = document.getElementById('card-shape-icon');
-            
-            if (isTouch) {
-                rangeTextEl.innerText = "Toque";
-                shapeIconEl.setAttribute('data-lucide', 'hand');
-                shapeIconEl.classList.remove('hidden');
-            } else {
-                rangeTextEl.innerText = `${document.getElementById('in-m').value}m / ${document.getElementById('in-ft').value}ft / ${document.getElementById('in-sq').value}c`;
-                if (shape !== 'none') {
-                    shapeIconEl.setAttribute('data-lucide', shapeIcons[shape]);
+                // Alcance y Forma
+                const isTouch = document.getElementById('in-touch').checked;
+                const rangeTextEl = document.getElementById('card-range');
+                const shapeIconEl = document.getElementById('card-shape-icon');
+                if (isTouch) {
+                    rangeTextEl.innerText = "Toque";
+                    shapeIconEl.setAttribute('data-lucide', 'hand');
                     shapeIconEl.classList.remove('hidden');
-                    shapeIconEl.style.transform = shape === 'cone' ? "rotate(180deg)" : "rotate(0deg)";
                 } else {
-                    shapeIconEl.classList.add('hidden');
+                    const ftVal = parseFloat(document.getElementById('in-ft').value) || 0;
+                    if (ftVal > 0) {
+                        const mVal = Math.round(ftVal * 0.3 * 10) / 10;
+                        const sqVal = Math.floor(ftVal / 5);
+                        rangeTextEl.innerText = `${ftVal}ft / ${mVal}m / ${sqVal}c`;
+                    } else {
+                        rangeTextEl.innerText = "---";
+                    }
+                    
+                    const shape = document.getElementById('in-shape').value;
+                    if (shape !== 'none') {
+                        shapeIconEl.setAttribute('data-lucide', shapeIcons[shape]);
+                        shapeIconEl.classList.remove('hidden');
+                        shapeIconEl.style.transform = shape === 'cone' ? "rotate(180deg)" : "rotate(0deg)";
+                    } else { shapeIconEl.classList.add('hidden'); }
                 }
-            }
 
-            const checkMap = { 'ico-v': 'in-v', 'ico-s': 'in-s', 'ico-m': 'in-m-check', 'ico-rit': 'in-rit', 'ico-con': 'in-con' };
-            Object.keys(checkMap).forEach(id => {
-                const active = document.getElementById(checkMap[id]).checked;
-                document.getElementById(id).className = `comp-icon ${active ? 'icon-active' : 'icon-inactive'}`;
-            });
+                // Iconos de componentes
+                const checkMap = { 'ico-v': 'in-v', 'ico-s': 'in-s', 'ico-m': 'in-m-check', 'ico-rit': 'in-rit', 'ico-con': 'in-con' };
+                Object.keys(checkMap).forEach(id => {
+                    const active = document.getElementById(checkMap[id]).checked;
+                    const el = document.getElementById(id);
+                    el.style.display = active ? 'flex' : 'none';
+                });
 
-            const mText = document.getElementById('in-m-text').value;
-            const mContainer = document.getElementById('card-m-desc');
-            mContainer.style.display = (document.getElementById('in-m-check').checked && mText) ? 'block' : 'none';
-            if(mContainer.style.display !== 'none') mContainer.innerText = `M: ${mText}`;
+                // Materiales
+                const mCheck = document.getElementById('in-m-check').checked;
+                const mText = document.getElementById('in-m-text').value;
+                const mContainer = document.getElementById('card-m-desc');
+                mContainer.style.display = (mCheck && mText) ? 'block' : 'none';
+                if(mCheck) mContainer.innerText = `M: ${mText}`;
 
-            document.getElementById('card-desc-main').innerHTML = document.getElementById('in-desc').value.replace(/\n/g, '<br>');
-            const higher = document.getElementById('in-higher').value;
-            const higherArea = document.getElementById('card-higher-area');
-            if(higher.trim()) {
-                higherArea.style.display = 'block';
+                // Descripción
+                const descVal = document.getElementById('in-desc').value;
+                document.getElementById('card-desc-main').innerHTML = descVal ? descVal.replace(/\n/g, '<br>') : "";
+                
+                // Niveles superiores
+                const higher = document.getElementById('in-higher').value;
+                document.getElementById('card-higher-area').style.display = higher.trim() ? 'block' : 'none';
                 document.getElementById('card-higher-text').innerText = " " + higher;
-            } else {
-                higherArea.style.display = 'none';
+                
+                // Fuente
+                document.getElementById('card-source-footer').innerText = document.getElementById('in-source').value || "---";
+
+                autoScaleFont();
+                if (window.lucide) lucide.createIcons();
+            } catch (e) {
+                console.error("Error updating:", e);
             }
-
-            document.getElementById('card-source-footer').innerText = document.getElementById('in-source').value;
-
-            autoScaleFont();
-            lucide.createIcons();
         }
 
         function autoScaleFont() {
             const container = document.getElementById('desc-container');
             const content = document.getElementById('card-content-wrapper');
+            if (!container || !content) return;
             let fontSize = 14; 
             content.style.fontSize = fontSize + 'px';
             while (content.scrollHeight > container.offsetHeight - 16 && fontSize > 6) {
@@ -557,20 +546,29 @@
 
         async function exportJPG() {
             const cardElement = document.getElementById('card');
-            const spellName = document.getElementById('in-name').value || 'hechizo';
-            const options = { scale: 3, backgroundColor: '#ffffff', useCORS: true, allowTaint: true };
+            // html2canvas opciones
+            const options = { 
+                scale: 3, 
+                backgroundColor: null, 
+                useCORS: true, 
+                allowTaint: true,
+                logging: false,
+                onclone: (clonedDoc) => {
+                    const icons = clonedDoc.querySelectorAll('[data-lucide]');
+                    // No forzamos display block para respetar la lógica de componentes ocultos
+                }
+            };
             try {
                 const canvas = await html2canvas(cardElement, options);
                 const link = document.createElement('a');
+                const spellName = document.getElementById('in-name').value || 'hechizo';
                 link.download = `D&D_Spell_${spellName.replace(/\s+/g, '_')}.jpg`;
                 link.href = canvas.toDataURL('image/jpeg', 0.9);
                 link.click();
-            } catch (e) { 
-                console.error("Error al exportar la imagen. Verifica si la imagen de fondo tiene restricciones de CORS.", e); 
-            }
+            } catch (e) { console.error(e); }
         }
 
-        window.onload = () => { update(); setTimeout(autoScaleFont, 100); };
+        window.onload = () => { update(); };
     </script>
 </body>
 </html>
