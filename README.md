@@ -47,4 +47,4 @@ Este proyecto es una aplicación web de un solo archivo (*Single File App*), por
 
 Este proyecto está bajo la **Licencia MIT**. Esto significa que puedes usarlo, modificarlo y compartirlo libremente en tus mesas de juego o proyectos personales.
 
-> Hecho con ❤️ para la comunidad de D&D por **[Tu Nombre/Usuario]**
+> Hecho con ❤️ para la comunidad de D&D por **Drack669**
