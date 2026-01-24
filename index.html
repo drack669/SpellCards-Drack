@@ -17,7 +17,6 @@
             background-color: #ffffff;
             color: #1e293b;
             padding: 20px;
-            /* Eliminamos min-height: 100vh para evitar forzar la altura de pantalla */
             height: auto; 
             box-sizing: border-box;
         }
@@ -33,9 +32,13 @@
             --text-primary: #2a1b10;
             --text-accent: #7c2d12;
             --text-secondary: #71717a;
+            --font-title: 'Cinzel', serif;
+            --font-body: 'Inter', sans-serif;
+            --size-title: 1.125rem;
+            --size-body: 0.875rem;
         }
         
-        .fantasy-font { font-family: 'Cinzel', serif; }
+        .fantasy-font { font-family: var(--font-title); }
         .medieval-font { font-family: 'MedievalSharp', cursive; }
 
         .card-container {
@@ -43,7 +46,6 @@
             height: 540px;
             perspective: 1000px;
             flex-shrink: 0;
-            /* Sticky para que la carta te siga mientras haces scroll en el panel */
             position: sticky;
             top: 20px;
         }
@@ -52,6 +54,8 @@
             width: 350px;
             height: 540px;
             background-color: #fdf6e3;
+            background-size: cover;
+            background-position: center;
             color: var(--text-primary);
             border: 10px solid var(--card-border);
             border-radius: 8px;
@@ -85,6 +89,8 @@
         }
 
         .header-section { border-bottom: 2px solid var(--card-border); }
+
+        #card-name { font-size: var(--size-title); font-family: var(--font-title); }
 
         .stat-grid {
             display: grid;
@@ -136,7 +142,10 @@
             overflow: hidden;
             text-align: justify;
             line-height: 1.25;
+            font-family: var(--font-body);
         }
+
+        #card-content-wrapper { font-size: var(--size-body); }
 
         .higher-levels-label {
             font-weight: 800;
@@ -155,6 +164,13 @@
             width: 100%;
             font-size: 0.85rem;
             display: block;
+        }
+
+        #dnd-spell-app-wrapper input[type="file"] {
+            background: transparent;
+            border: 1px dashed #cbd5e1;
+            padding: 10px;
+            cursor: pointer;
         }
 
         #dnd-spell-app-wrapper input:focus, 
@@ -196,6 +212,7 @@
             font-size: 0.95rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            margin-top: 20px;
         }
 
         .btn-export:hover { 
@@ -203,10 +220,6 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         .footer-box {
             background: var(--info-box-bg);
@@ -233,43 +246,72 @@
     <div id="dnd-spell-app-wrapper">
         <div class="flex flex-wrap gap-8 justify-center items-start w-full relative">
             
-            <!-- Panel de Control (Sin scroll interno forzado) -->
+            <!-- Panel de Control -->
             <div class="w-full max-w-[420px]">
-                <h2 class="text-xl font-bold mb-4 text-[#5d4037] fantasy-font text-center">Maestro de Hechizos</h2>
+                <h2 class="text-xl font-bold mb-4 text-[#5d4037] fantasy-font text-center uppercase tracking-widest">Maestro de Hechizos</h2>
                 
-                <div class="mb-4">
-                    <button onclick="exportJPG()" class="btn-export">
-                        <i data-lucide="download"></i> Descargar Imagen
-                    </button>
-                </div>
-
                 <!-- 1. DISEÑO -->
                 <div class="control-group">
                     <label class="font-bold text-[#5d4037] mb-2 border-b border-zinc-200 pb-1 uppercase tracking-wider">1. Estética y Colores</label>
                     
-                    <label class="mb-1">Colores de la Carta</label>
+                    <label class="mb-1">Imagen de Fondo Local</label>
+                    <input type="file" id="in-bg-file" accept="image/*" onchange="handleLocalImage(event)" class="mb-1">
+                    <button onclick="clearLocalImage()" id="btn-clear-img" class="hidden text-[0.6rem] text-red-600 underline mb-4">Quitar imagen de fondo</button>
+
+                    <label class="mb-1 mt-4 font-semibold text-zinc-600">Colores</label>
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="text-[0.6rem]">Color de Fondo</label>
+                            <label class="text-[0.6rem]">Fondo Carta</label>
                             <input type="color" id="col-card-bg" value="#fdf6e3" oninput="update()">
                         </div>
                         <div>
-                            <label class="text-[0.6rem]">Color de Borde</label>
+                            <label class="text-[0.6rem]">Borde Carta</label>
                             <input type="color" id="col-card-border" value="#2a1b10" oninput="update()">
                         </div>
                     </div>
 
-                    <label class="mb-1">Colores del Texto</label>
                     <div class="color-picker-grid mb-4">
                         <div><label class="text-[0.6rem]">Principal</label><input type="color" id="col-primary" value="#2a1b10" oninput="update()"></div>
                         <div><label class="text-[0.6rem]">Acento</label><input type="color" id="col-accent" value="#7c2d12" oninput="update()"></div>
                         <div><label class="text-[0.6rem]">Secundario</label><input type="color" id="col-secondary" value="#71717a" oninput="update()"></div>
                     </div>
                     
-                    <label class="mb-1">Cajas de Información</label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="text-[0.6rem]">Color Fondo Box</label><input type="color" id="col-box" value="#fdf6e3" oninput="update()"></div>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div><label class="text-[0.6rem]">Fondo Box</label><input type="color" id="col-box" value="#fdf6e3" oninput="update()"></div>
                         <div><label class="text-[0.6rem]">Opacidad</label><input type="range" id="range-opacity" min="0" max="1" step="0.01" value="0.8" oninput="update()"></div>
+                    </div>
+
+                    <!-- NUEVA SECCIÓN TIPOGRAFÍA -->
+                    <label class="mb-1 font-semibold text-zinc-600">Tipografía</label>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <div>
+                            <label class="text-[0.6rem]">Tamaño Título</label>
+                            <input type="number" id="in-size-title" value="18" min="10" max="40" oninput="update()">
+                        </div>
+                        <div>
+                            <label class="text-[0.6rem]">Tamaño Cuerpo</label>
+                            <input type="number" id="in-size-body" value="14" min="8" max="24" oninput="update()">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="text-[0.6rem]">Fuente de Título</label>
+                        <select id="in-font-title" onchange="toggleCustomFont('title')">
+                            <option value="'Cinzel', serif">Cinzel (Fantasía)</option>
+                            <option value="'MedievalSharp', cursive">MedievalSharp</option>
+                            <option value="'Inter', sans-serif">Inter (Moderna)</option>
+                            <option value="custom">Fuente del Sistema...</option>
+                        </select>
+                        <input type="text" id="in-custom-font-title" class="hidden mt-1" placeholder="Ej: Arial, Papyrus..." oninput="update()">
+                    </div>
+                    <div class="mb-2">
+                        <label class="text-[0.6rem]">Fuente de Cuerpo</label>
+                        <select id="in-font-body" onchange="toggleCustomFont('body')">
+                            <option value="'Inter', sans-serif">Inter (Moderna)</option>
+                            <option value="'Cinzel', serif">Cinzel</option>
+                            <option value="'MedievalSharp', cursive">MedievalSharp</option>
+                            <option value="custom">Fuente del Sistema...</option>
+                        </select>
+                        <input type="text" id="in-custom-font-body" class="hidden mt-1" placeholder="Ej: Times New Roman..." oninput="update()">
                     </div>
                 </div>
 
@@ -330,12 +372,14 @@
                         <label><input type="checkbox" id="in-con" onchange="update()"> Con</label>
                     </div>
                     <input type="text" id="in-m-text" value="" oninput="update()" placeholder="Materiales necesarios...">
-                    <div class="mt-2"><label>Clase</label>
-                        <select id="in-class" onchange="update()">
-                            <option value="mago">Mago</option><option value="hechicero">Hechicero</option><option value="brujo">Brujo</option>
-                            <option value="clerigo">Clérigo</option><option value="bardo">Bardo</option><option value="paladin">Paladín</option>
-                            <option value="cazador">Cazador</option><option value="artificer">Artífice</option>
-                        </select>
+                    
+                    <div class="mt-2">
+                        <label>Clase</label>
+                        <input type="text" id="in-class" value="Mago" oninput="update()" placeholder="Escribe la clase...">
+                        
+                        <label class="mt-2 text-[0.65rem]">Icono de Clase Personalizado</label>
+                        <input type="file" id="in-class-icon-file" accept="image/*" onchange="handleClassIcon(event)" class="mb-1 text-[0.65rem]">
+                        <button onclick="clearClassIcon()" id="btn-clear-class-icon" class="hidden text-[0.6rem] text-red-600 underline">Quitar icono personalizado</button>
                     </div>
                 </div>
 
@@ -346,6 +390,13 @@
                     <textarea id="in-higher" rows="2" oninput="update()" class="mb-2" placeholder="A niveles superiores..."></textarea>
                     <input type="text" id="in-source" value="" oninput="update()" placeholder="Fuente (ej. PHB'24 - p.215)">
                 </div>
+
+                <!-- BOTÓN AL FONDO -->
+                <div class="pb-10">
+                    <button onclick="exportJPG()" class="btn-export">
+                        <i data-lucide="download"></i> Descargar Imagen
+                    </button>
+                </div>
             </div>
 
             <!-- Card Rendering -->
@@ -354,13 +405,14 @@
                     <div class="info-box header-section">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col max-w-[70%]">
-                                <span id="card-name" class="fantasy-font text-lg font-bold leading-tight" style="color: var(--text-primary)">---</span>
+                                <span id="card-name" class="leading-tight font-bold" style="color: var(--text-primary)">---</span>
                                 <span id="card-name-en" class="italic text-[0.6rem]" style="color: var(--text-secondary)">---</span>
                             </div>
                             <div class="flex flex-col items-end">
                                 <span id="card-lvl-school" class="fantasy-font text-[0.6rem] font-bold text-right" style="color: var(--text-accent)">TRUCO</span>
-                                <div class="w-7 h-7 flex items-center justify-center mt-1">
+                                <div class="w-7 h-7 flex items-center justify-center mt-1" id="class-icon-container">
                                     <i id="card-class-icon" data-lucide="wand-2" class="w-5 h-5" style="color: var(--text-accent)"></i>
+                                    <img id="card-class-custom-img" class="w-6 h-6 object-contain hidden">
                                 </div>
                             </div>
                         </div>
@@ -372,7 +424,7 @@
                             <div class="stat-item">
                                 <span class="stat-label">Alcance / Área</span>
                                 <div class="flex items-center gap-1.5 mt-0.5">
-                                    <div class="flex-shrink-0 w-4 h-4 flex items-center justify-center">
+                                    <div class="flex-shrink-0 w-4 h-4 flex items-center justify-center" id="shape-icon-wrapper">
                                         <i id="card-shape-icon" data-lucide="circle" class="w-3.5 h-3.5 hidden" style="color: var(--text-accent)"></i>
                                     </div>
                                     <span id="card-range" class="text-[0.58rem] font-semibold leading-tight">---</span>
@@ -414,13 +466,54 @@
     <script>
         const classIcons = { mago: 'wand-2', hechicero: 'zap', brujo: 'eye', clerigo: 'cross', bardo: 'music', paladin: 'shield', cazador: 'target', artificer: 'hammer' };
         const shapeIcons = { cone: 'triangle', sphere: 'circle', line: 'move-right', cube: 'square', cylinder: 'database', none: '' };
-        let updateTimeout;
+        let localBgImage = null;
+        let customClassIcon = null;
 
         function hexToRgb(hex) {
             const r = parseInt(hex.slice(1, 3), 16);
             const g = parseInt(hex.slice(3, 5), 16);
             const b = parseInt(hex.slice(5, 7), 16);
             return `${r}, ${g}, ${b}`;
+        }
+
+        function handleLocalImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localBgImage = e.target.result;
+                    document.getElementById('btn-clear-img').classList.remove('hidden');
+                    update();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearLocalImage() {
+            localBgImage = null;
+            document.getElementById('in-bg-file').value = "";
+            document.getElementById('btn-clear-img').classList.add('hidden');
+            update();
+        }
+
+        function handleClassIcon(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customClassIcon = e.target.result;
+                    document.getElementById('btn-clear-class-icon').classList.remove('hidden');
+                    update();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearClassIcon() {
+            customClassIcon = null;
+            document.getElementById('in-class-icon-file').value = "";
+            document.getElementById('btn-clear-class-icon').classList.add('hidden');
+            update();
         }
 
         function toggleTouch() {
@@ -433,22 +526,53 @@
             update();
         }
 
+        function toggleCustomFont(type) {
+            const select = document.getElementById(`in-font-${type}`);
+            const input = document.getElementById(`in-custom-font-${type}`);
+            if (select.value === 'custom') {
+                input.classList.remove('hidden');
+            } else {
+                input.classList.add('hidden');
+            }
+            update();
+        }
+
         function update() {
             try {
                 const root = document.documentElement;
+                const card = document.getElementById('card');
                 
-                // Colores de la carta
+                // Tipografía
+                const titleFontSize = document.getElementById('in-size-title').value;
+                const bodyFontSize = document.getElementById('in-size-body').value;
+                root.style.setProperty('--size-title', `${titleFontSize}px`);
+                root.style.setProperty('--size-body', `${bodyFontSize}px`);
+
+                const titleFontSelect = document.getElementById('in-font-title').value;
+                const bodyFontSelect = document.getElementById('in-font-body').value;
+                
+                let titleFont = titleFontSelect === 'custom' ? document.getElementById('in-custom-font-title').value : titleFontSelect;
+                let bodyFont = bodyFontSelect === 'custom' ? document.getElementById('in-custom-font-body').value : bodyFontSelect;
+
+                root.style.setProperty('--font-title', titleFont || "'Cinzel', serif");
+                root.style.setProperty('--font-body', bodyFont || "'Inter', sans-serif");
+
+                // Colores
                 const cardBg = document.getElementById('col-card-bg').value;
                 const cardBorder = document.getElementById('col-card-border').value;
                 root.style.setProperty('--card-border', cardBorder);
-                document.getElementById('card').style.backgroundColor = cardBg;
+                card.style.backgroundColor = cardBg;
+                
+                if (localBgImage) {
+                    card.style.backgroundImage = `url('${localBgImage}')`;
+                } else {
+                    card.style.backgroundImage = 'none';
+                }
 
-                // Colores de texto
                 root.style.setProperty('--text-primary', document.getElementById('col-primary').value);
                 root.style.setProperty('--text-accent', document.getElementById('col-accent').value);
                 root.style.setProperty('--text-secondary', document.getElementById('col-secondary').value);
                 
-                // Cajas
                 const boxRgb = hexToRgb(document.getElementById('col-box').value);
                 root.style.setProperty('--info-box-bg', `rgba(${boxRgb}, ${document.getElementById('range-opacity').value})`);
 
@@ -467,12 +591,25 @@
                 document.getElementById('card-time').innerText = document.getElementById('in-time').value || "---";
                 document.getElementById('card-duration').innerText = document.getElementById('in-duration').value || "---";
                 
-                // Clase
+                // Clase e Icono
                 const className = document.getElementById('in-class').value;
+                const classNameLower = className.toLowerCase().trim();
                 document.getElementById('card-class-name').innerText = className || "---";
-                document.getElementById('card-class-icon').setAttribute('data-lucide', classIcons[className] || 'wand-2');
+                
+                const lucideIconEl = document.getElementById('card-class-icon');
+                const customImgEl = document.getElementById('card-class-custom-img');
 
-                // Alcance y Forma
+                if (customClassIcon) {
+                    lucideIconEl.classList.add('hidden');
+                    customImgEl.src = customClassIcon;
+                    customImgEl.classList.remove('hidden');
+                } else {
+                    customImgEl.classList.add('hidden');
+                    const iconId = classIcons[classNameLower] || 'wand-2';
+                    lucideIconEl.setAttribute('data-lucide', iconId);
+                    lucideIconEl.classList.remove('hidden');
+                }
+
                 const isTouch = document.getElementById('in-touch').checked;
                 const rangeTextEl = document.getElementById('card-range');
                 const shapeIconEl = document.getElementById('card-shape-icon');
@@ -498,7 +635,6 @@
                     } else { shapeIconEl.classList.add('hidden'); }
                 }
 
-                // Iconos de componentes
                 const checkMap = { 'ico-v': 'in-v', 'ico-s': 'in-s', 'ico-m': 'in-m-check', 'ico-rit': 'in-rit', 'ico-con': 'in-con' };
                 Object.keys(checkMap).forEach(id => {
                     const active = document.getElementById(checkMap[id]).checked;
@@ -506,23 +642,19 @@
                     el.style.display = active ? 'flex' : 'none';
                 });
 
-                // Materiales
                 const mCheck = document.getElementById('in-m-check').checked;
                 const mText = document.getElementById('in-m-text').value;
                 const mContainer = document.getElementById('card-m-desc');
                 mContainer.style.display = (mCheck && mText) ? 'block' : 'none';
                 if(mCheck) mContainer.innerText = `M: ${mText}`;
 
-                // Descripción
                 const descVal = document.getElementById('in-desc').value;
                 document.getElementById('card-desc-main').innerHTML = descVal ? descVal.replace(/\n/g, '<br>') : "";
                 
-                // Niveles superiores
                 const higher = document.getElementById('in-higher').value;
                 document.getElementById('card-higher-area').style.display = higher.trim() ? 'block' : 'none';
                 document.getElementById('card-higher-text').innerText = " " + higher;
                 
-                // Fuente
                 document.getElementById('card-source-footer').innerText = document.getElementById('in-source').value || "---";
 
                 autoScaleFont();
@@ -536,7 +668,7 @@
             const container = document.getElementById('desc-container');
             const content = document.getElementById('card-content-wrapper');
             if (!container || !content) return;
-            let fontSize = 14; 
+            let fontSize = parseInt(document.getElementById('in-size-body').value); 
             content.style.fontSize = fontSize + 'px';
             while (content.scrollHeight > container.offsetHeight - 16 && fontSize > 6) {
                 fontSize -= 0.2;
@@ -546,7 +678,6 @@
 
         async function exportJPG() {
             const cardElement = document.getElementById('card');
-            // html2canvas opciones
             const options = { 
                 scale: 3, 
                 backgroundColor: null, 
@@ -554,8 +685,11 @@
                 allowTaint: true,
                 logging: false,
                 onclone: (clonedDoc) => {
-                    const icons = clonedDoc.querySelectorAll('[data-lucide]');
-                    // No forzamos display block para respetar la lógica de componentes ocultos
+                    const shapeWrapper = clonedDoc.getElementById('shape-icon-wrapper');
+                    const shapeIcon = clonedDoc.getElementById('card-shape-icon');
+                    if (shapeIcon && !shapeIcon.classList.contains('hidden')) {
+                        shapeWrapper.style.paddingTop = "4px";
+                    }
                 }
             };
             try {
